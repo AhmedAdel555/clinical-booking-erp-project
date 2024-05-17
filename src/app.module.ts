@@ -8,16 +8,19 @@ import { catModule } from './modules/catalog/catalog.module';
 import { UsersModule } from './modules/users/users.module';
 import { ServicesModule } from './modules/services/services.module';
 import { BookingsModule } from './modules/bookings/bookings.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb+srv://mongo_user:Ahmed123456@cluster0.0abffrs.mongodb.net/'),
+    MongooseModule.forRoot("mongodb+srv://mongo_user:Ahmed123456@cluster0.0abffrs.mongodb.net/"),
     authModule,
     orgModule,
     catModule,
     ServicesModule,
     UsersModule,
     BookingsModule,
+    NotificationsModule,
+    
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -22,18 +22,21 @@ export class UsersService {
     @InjectModel(Catalog.name) private catalogModel: Model<Catalog>
 ) {}
 
-  async findByEmail(email: string): Promise<User | null> {
-    return this.userModel.findOne({ email }).exec();
+  async IsUserExist(email: string, phone: string): Promise<User | null> {
+    return this.userModel.findOne({
+      $or: [
+        { email },
+        { phone },
+      ],
+    }).exec();
   }
 
   async createUser(createUserDTO: SignUpDTO): Promise<User> {
     const createdUser = new this.userModel({
-      NationalId: createUserDTO.NationalId,
       email: createUserDTO.email,
       password: createUserDTO.password,
       phone: createUserDTO.phone,
       username: createUserDTO.username,
-      status: 'Active',
       role: 'User',
     });
     return createdUser.save();
@@ -41,9 +44,9 @@ export class UsersService {
 
   async createAdmin(createUserDTO: SignUpAdminDTO, superAdminId: string) {
 
-    const organization = this.organizationModel.findById(createUserDTO.organizationId);
+    const organization = this.organizationModel.findById(createUserDTO.organizationId).exec();
 
-    const user = this.userModel.findById(superAdminId);
+    const user = this.userModel.findById(superAdminId).exec();
 
     const createdUser = new this.userModel({
       NationalId: createUserDTO.NationalId,
@@ -51,7 +54,6 @@ export class UsersService {
       password: createUserDTO.password,
       phone: createUserDTO.phone,
       username: createUserDTO.username,
-      status: 'Active',
       role: 'Admin',
       organization: organization,
       createdByUser: user
@@ -61,11 +63,11 @@ export class UsersService {
 
   async createAgent(createUserDTO: SignUpAgentDTO, adminId: string) {
 
-    const catalog =  await this.catalogModel.findById(createUserDTO.catalog_id);
+    const catalog =  await this.catalogModel.findById(createUserDTO.catalogId).exec();
 
     const admin = await this.userModel.findById(adminId).exec();
 
-    const service = await this.serviceModel.findById(createUserDTO.serviceId);
+    const service = await (await this.serviceModel.findById(createUserDTO.serviceId)).populated('organization').exec();
 
     const createdUser = new this.userModel({
       NationalId: createUserDTO.NationalId,
@@ -76,10 +78,10 @@ export class UsersService {
       status: 'Active',
       role: 'Agent',
       catalog: catalog,
-      organization: admin.organization,
+      organization: service.organization,
       createdByUser: admin,
-      available_dates: createUserDTO.available_dates,
-      cash_acceptance: createUserDTO.cash_acceptance,
+      available_dates: createUserDTO.availableDates,
+      cash_acceptance: createUserDTO.cashAcceptance,
       service: service,
     });
 
@@ -87,12 +89,10 @@ export class UsersService {
   }
 
   async getUserbyId(userId: string) {
-    const user = await this.userModel.findById({ userId });
-
+    const user = await this.userModel.findById({ userId }).exec();
     if (!user) {
-      throw new BadRequestException('user is not fount');
+      throw new BadRequestException('user is not found');
     }
-
     return user;
   }
 
@@ -110,6 +110,13 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  async getAgentsByOrganization(organizationId: string) {
+    const Agents = await this.userModel
+      .find({ role: 'Agent', organization: organizationId })
+      .exec();
+    return Agents;
   }
 
   async getAgentsByService(serviceId: string) {

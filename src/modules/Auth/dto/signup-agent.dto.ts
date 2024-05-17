@@ -1,14 +1,18 @@
-import { ArrayMinSize, IsDate, IsMongoId, IsNotEmpty } from "class-validator";
+import { ArrayMinSize, IsDate, IsMongoId, IsNotEmpty, IsString } from "class-validator";
 import { SignUpDTO } from "./signup.dto";
 import { Type } from "class-transformer";
 
 export class SignUpAgentDTO extends SignUpDTO{
 
+  @IsString()
+  @IsNotEmpty()
+  NationalId: string;
+
   @IsMongoId()
-  catalog_id: string;
+  catalogId: string;
 
   @IsNotEmpty()
-  cash_acceptance: boolean;
+  cashAcceptance: boolean;
 
   @IsMongoId()
   serviceId: string;
@@ -16,5 +20,5 @@ export class SignUpAgentDTO extends SignUpDTO{
   @Type(() => Date)
   @IsDate({ each: true })
   @ArrayMinSize(1)
-  available_dates: Date[]
+  availableDates: Date[]
 }

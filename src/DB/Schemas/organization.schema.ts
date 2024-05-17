@@ -10,15 +10,16 @@ export class Organization {
   name: string;
 
   @Prop({
-    type: Number,
+    type: String,
     required: true,
     unique: true,
   })
-  License_ID: number;
+  License_ID: string;
   
   @Prop({
     type: String,
     enum: ['Active', 'InActive'],
+    required: true,
     default: 'Active',
   })
   Org_Status: string;
@@ -34,9 +35,9 @@ export class Organization {
   Financial_Limit_TO: number;
 
   @Prop({
-    type: Number,
+    type: String,
   })
-  Bank_account: number;
+  Bank_account: string;
 }
 
 export const OrganizationSchema = SchemaFactory.createForClass(Organization);

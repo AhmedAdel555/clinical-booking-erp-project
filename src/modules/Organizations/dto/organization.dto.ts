@@ -20,9 +20,9 @@ export class OrganizationDto {
   })
   name: string;
 
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  License_ID: number;
+  License_ID: string;
 
   @IsNumber()
   @IsOptional()
@@ -32,8 +32,8 @@ export class OrganizationDto {
   @IsOptional()
   Financial_Limit_TO?: number;
 
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  Bank_account?: number;
+  Bank_account?: string;
 
 }

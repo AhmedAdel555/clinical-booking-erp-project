@@ -10,6 +10,7 @@ export class UsersController {
     return await this._userservice.getUserbyId(id);
   }
 
+  
 
   @Get('/agents')
   async getAllAgents() {
@@ -22,17 +23,18 @@ export class UsersController {
     return await this._userservice.getAgentById(id);
   }
   
+  @Get('/agents/organizations/:organizationId')
+  async getAgentsOfOrganization(@Param('organizationId') organizationId: string) {
+    return await this._userservice.getAgentsByOrganization(organizationId);
+  }
 
   @Get('/agents/services/:serviceId')
   async getAgentsOfService(@Param('serviceId') serviceId: string) {
     return await this._userservice.getAgentsByService(serviceId);
   }
 
-
   @Get('/agents/catalogs/:catalogId')
   async getAgentsOfCatalog(@Param('catalogId') catalogId: string) {
     return await this._userservice.getAgentsByCatalog(catalogId);
   }
-
-  
 }

@@ -6,6 +6,7 @@ export class Catalog {
   @Prop({
     type: String,
     require: true,
+    unique: true
   })
   catalog_name: string;
 

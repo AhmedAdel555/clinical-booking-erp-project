@@ -16,8 +16,22 @@ export class ServicesController {
   @Roles(['Admin'])
   @UseGuards(AuthGuard, RoleGuard)
   @Post()
-  async createService(@Body() serviceDTO: CreateServiceDTO){
-    await this.servicesService.createNewService(serviceDTO); 
+  async createService(@Body() serviceDTO: CreateServiceDTO, @Req() req){
+    await this.servicesService.createNewService(serviceDTO, req.user.id); 
     return {message: "Service created Successfully"}
   }
+
+  @Get('/:serviceId')
+  async findServiceById(@Param('serviceId') serviceId: string){
+     return this.servicesService.findServiceById(serviceId);
+  }
+
+
+  @Get('/organizations/:organizationId')
+  async findOrganizationServices(@Param('organizationId') organizationId: string){
+     return await this.servicesService.findOrganizationServices(organizationId);
+  }
+
+
+
 }

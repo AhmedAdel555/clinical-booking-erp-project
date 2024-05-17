@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Organization } from 'src/DB/Schemas/organization.schema';
@@ -13,7 +13,7 @@ export class organizationServices {
     @InjectModel(Organization.name) private orgModel :Model<Organization>
   ) {}
   
-  async createOrg(organizationBodyDto: OrganizationDto): Promise<Organization> {
+  async createOrg(organizationBodyDto: OrganizationDto){
        
     const createdOrganization = new this.orgModel({
       name: organizationBodyDto.name,
@@ -22,7 +22,12 @@ export class organizationServices {
       Financial_Limit_From: organizationBodyDto.Financial_Limit_From,
       Financial_Limit_TO: organizationBodyDto.Financial_Limit_TO
     });
-    return createdOrganization.save();
+
+    const newOrganization = await createdOrganization.save();
+
+    if(!newOrganization){
+      throw new InternalServerErrorException('fail to add organization');
+    }
   }
 
   async findAllOrganizations(){

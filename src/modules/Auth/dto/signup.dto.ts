@@ -26,14 +26,6 @@ export class IsPasswordEqualTo implements ValidatorConstraintInterface {
 
 export class SignUpDTO {
 
-  @IsNumber()
-  @IsNotEmpty()
-  NationalId: number;
-
-  @IsNumber()
-  @IsNotEmpty()
-  phone: number;
-
   @IsString()
   @MinLength(3, {
     message: 'your name must be at least 3 chars',
@@ -42,6 +34,10 @@ export class SignUpDTO {
     message: 'your name mustnot exceed 10 chars',
   })
   username: string;
+
+  @IsString()
+  @IsNotEmpty()
+  phone: string;
 
   @IsString()
   @IsNotEmpty()
@@ -54,6 +50,6 @@ export class SignUpDTO {
   @IsString()
   @IsNotEmpty()
   @Validate(IsPasswordEqualTo, ['password'])
-  confirm_password: string;
+  confirmPassword: string;
 
 }

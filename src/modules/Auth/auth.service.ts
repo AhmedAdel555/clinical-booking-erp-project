@@ -6,19 +6,21 @@ import { UsersService } from '../users/users.service';
 import { SignInDto } from './dto/signin.dto';
 import { SignUpAdminDTO } from './dto/signup-admin.dto';
 import { SignUpAgentDTO } from './dto/signup-agent.dto';
+import { MailService } from '../notifications/mail.service';
 
 @Injectable()
 export class authService {
   constructor(
     private userService: UsersService,
     private jwtService: JwtService,
+    private mailService: MailService
   ) {}
 
   async signUp(signUpDTO: SignUpDTO): Promise<void> {
     
-    const userExit = await this.userService.findByEmail(signUpDTO.email);
+    const userExit = await this.userService.IsUserExist(signUpDTO.email, signUpDTO.phone);
     if (userExit) {
-      throw new BadRequestException('email is elready exist');
+      throw new BadRequestException('user is elready exist');
     }
     
     const hashadPass = bcryptjs.hashSync(signUpDTO.password as string, 8 as number);
@@ -35,12 +37,14 @@ export class authService {
 
   async signUpAdmin(signUpDTO: SignUpAdminDTO, superAdminId: string): Promise<void> {
     
-    const userExit = await this.userService.findByEmail(signUpDTO.email);
+    const userExit = await this.userService.IsUserExist(signUpDTO.email, signUpDTO.phone);
 
     if (userExit) {
-      throw new BadRequestException('email is elready exist');
+      throw new BadRequestException('User is elready exist');
     }
     
+    const unhashedPassword = signUpDTO.password;
+
     const hashadPass = bcryptjs.hashSync(signUpDTO.password as string, 8 as number);
 
     signUpDTO.password = hashadPass;
@@ -50,17 +54,21 @@ export class authService {
     if (!user) {
       throw new InternalServerErrorException('fail to add user');
     }
+
+    await this.mailService.sendMail(user.email, `Congratulation for joining Clinical Booking your password is ${unhashedPassword}`, "Clinical Booking Registration")
     
   }
 
   async signUpAgent(signUpDTO: SignUpAgentDTO, admin: string): Promise<void> {
     
-    const userExit = await this.userService.findByEmail(signUpDTO.email);
+    const userExit = await this.userService.IsUserExist(signUpDTO.email, signUpDTO.phone);
 
     if (userExit) {
-      throw new BadRequestException('email is elready exist');
+      throw new BadRequestException('user is elready exist');
     }
     
+    const unhashedPassword = signUpDTO.password;
+
     const hashadPass = bcryptjs.hashSync(signUpDTO.password as string, 8 as number);
 
     signUpDTO.password = hashadPass;
@@ -71,6 +79,8 @@ export class authService {
       throw new InternalServerErrorException('fail to add user');
     }
     
+    await this.mailService.sendMail(user.email, `Congratulation for joining Clinical Booking your password is ${unhashedPassword}`, "Clinical Booking Registration")
+
   }
 
 
@@ -78,7 +88,8 @@ export class authService {
 
     const { email, password } = body;
 
-    const userExists = await this.userService.findByEmail(email);
+    const userExists = await this.userService.IsUserExist(email, "");
+
     if (!userExists) {
       throw new BadRequestException('in-valid login credential');
     }
@@ -103,7 +114,7 @@ export class authService {
         expiresIn: '1d'  
       },
     );
-    
+
     return { message: 'Done', user: userExists, token };
   }
   

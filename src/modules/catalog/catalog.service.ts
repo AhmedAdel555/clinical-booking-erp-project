@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Catalog } from 'src/DB/Schemas/catalog.schema';
@@ -12,16 +12,21 @@ export class catsrvice {
   ) {}
 
 
-  async createCatalog(body: CatalogBodyDto): Promise<Catalog> {
+  async createCatalog(body: CatalogBodyDto){
 
-    const catalogExist = await this.catalogmodel.findOne({ catalog_name: body.catalogName });
+    const catalogExist = await this.catalogmodel.findOne({ catalog_name: body.catalogName }).exec();
+
     if (catalogExist) {
       throw new BadRequestException('Catalog name is elready exist');
     }
 
     const catalog = new this.catalogmodel({ catalog_name: body.catalogName });
 
-    return catalog.save()
+    const newCatalog = await catalog.save()
+
+    if(!newCatalog){
+      throw new InternalServerErrorException('fail to save catalog');
+    }
   }
 
   async findAll(): Promise<Catalog[]> {

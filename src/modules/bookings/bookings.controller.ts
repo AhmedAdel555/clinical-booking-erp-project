@@ -18,4 +18,6 @@ export class BookingsController {
   async getUserBookedAppointments(@Req() req){
     return await this.BookingService.findAllUserBookedAppointments(req.user.id)
   }
+
+  
 }

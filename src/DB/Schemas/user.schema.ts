@@ -11,43 +11,42 @@ export class User {
 
   // for all users
   @Prop({
-    type: Number,
+    type: String,
     unique: true,
-    required: true,
   })
-  NationalId: number;
+  NationalId: string;
 
   @Prop({
     type: String,
     required: true,
-    unique: false,
   })
   username: string;
 
   @Prop({
-    type: Number,
+    type: String,
     unique: true,
     required: true,
   })
-  phone: number;
+  phone: string;
 
   @Prop({
     unique: true,
     type: String,
     required: true,
-    min: 3,
-    max: 7,
   })
   email: string;
   
   @Prop({
     type: String,
     required: true,
+    min: 3,
+    max: 7
   })
   password: string;
 
   @Prop({
     type: String,
+    enum: ['Active', 'InActive'],
     required: true,
     default: "Active"
   })
@@ -55,6 +54,8 @@ export class User {
 
   @Prop({
     type: String,
+    enum: ["Super Admin" , "Admin" , "Agent" , "User"],
+    required: true,
   })
   role:RoleType;
 
