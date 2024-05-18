@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 import { User } from './user.schema';
-import { Service } from './service.schema';
 
 @Schema()
 export class Booking {

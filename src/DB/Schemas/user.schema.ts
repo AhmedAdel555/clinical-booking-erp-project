@@ -40,7 +40,8 @@ export class User {
     type: String,
     required: true,
     min: 3,
-    max: 7
+    max: 7,
+    select: false
   })
   password: string;
 

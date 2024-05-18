@@ -54,4 +54,15 @@ export class BookingsService {
     .exec();
   }
 
+  async findAppointmentsForAgentOnDay(agentId: string, day: Date): Promise<Booking[]> {
+    return this.bookingModel.find({
+      agent: agentId,
+      booking_date: {
+        $gte: new Date(day.setHours(0, 0, 0)),
+        $lt: new Date(day.setHours(23, 59, 59)),
+      },
+    }).populate('user')
+      .exec();
+  }
+
 }

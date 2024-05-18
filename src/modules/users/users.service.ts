@@ -28,7 +28,7 @@ export class UsersService {
         { email },
         { phone },
       ],
-    }).exec();
+    }).select('+password').exec();
   }
 
   async createUser(createUserDTO: SignUpDTO): Promise<User> {
@@ -103,6 +103,8 @@ export class UsersService {
   async getAgentById(agentId: string): Promise<User> {
     const user = await this.userModel
       .findOne({ _id: agentId, role: 'Agent' })
+      .populate('service')
+      .populate('organization')
       .exec();
 
     if (!user) {
