@@ -12,9 +12,10 @@ export class User {
   // for all users
   @Prop({
     type: String,
-    unique: true,
+    unique: true, 
+    sparse: true
   })
-  NationalId: string;
+  national_id: string;
 
   @Prop({
     type: String,
@@ -62,18 +63,21 @@ export class User {
 
   // for admis
   @Prop({
-    type: { type: Types.ObjectId, ref: 'Organization' }
+    type: Types.ObjectId,
+    ref: 'Organization'
   })
   organization: Organization
 
   @Prop({
-    type: { type: Types.ObjectId, ref: 'User' }
+    type: Types.ObjectId,
+    ref: 'User'
   })
   createdByUser: User
 
-  @Prop(
-    { type: Types.ObjectId, ref: 'Catalog' },
-  )
+  @Prop({
+    type: Types.ObjectId,
+    ref: 'Catalog'
+  })
   catalog: Catalog;
 
   @Prop({
@@ -87,7 +91,8 @@ export class User {
   available_dates: Date[]
 
   @Prop({
-    type: { type: Types.ObjectId, ref: 'Service' }
+    type: Types.ObjectId,
+     ref: 'Service'
   })
   service: Service
 }

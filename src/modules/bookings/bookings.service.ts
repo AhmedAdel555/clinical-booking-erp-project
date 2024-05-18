@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { BookingDTO } from './dto/booking.dto';
 import { Booking } from 'src/DB/Schemas/booking.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from 'src/DB/Schemas/user.schema';
 import { MailService } from '../notifications/mail.service';
@@ -18,13 +18,13 @@ export class BookingsService {
 
   async bookDoctor(bookingDTO: BookingDTO, userId: string){
     
-    const agent = await (await this.userModel.findById(bookingDTO.agentId)).populated('service').populate('organization').exec();
-    
-    if (!agent || !agent.available_dates.includes(bookingDTO.bookingDate)) {
+    const agent = await this.userModel.findById(bookingDTO.agentId).populate('service').populate('organization').exec();
+
+    if (!agent || !agent.available_dates.some(date => date.getTime() === bookingDTO.bookingDate.getTime())) {
       throw new Error('Agent is not available on the booking date');
     }
 
-    agent.available_dates = agent.available_dates.filter(date => date !== bookingDTO.bookingDate);
+    agent.available_dates = agent.available_dates.filter(date => date.getTime() !== bookingDTO.bookingDate.getTime());
     await agent.save();
 
     const currentUser = await this.userModel.findById(userId).exec();
@@ -33,8 +33,8 @@ export class BookingsService {
       agent : agent,
       booking_date : bookingDTO.bookingDate,
       user : currentUser,
-      vat : 5,
-      total_payment : agent.service.service_fees_amount - (5 / 100 * agent.service.service_fees_amount),
+      vat : 2.5,
+      total_payment : agent.service.service_fees_amount + (5 / 100 * agent.service.service_fees_amount),
     });
     
     const booking = await createdBooking.save();
@@ -48,15 +48,19 @@ export class BookingsService {
   }
 
   async findAllUserBookedAppointments(userId: string){
-    return this.bookingModel.find({ user: userId })
-    .populate('service')
-    .populate('agent')
+    return this.bookingModel.find({ user:  new Types.ObjectId(userId) })
+    .populate({
+      path: 'agent',
+      populate: {
+        path: 'service'
+      }
+    })
     .exec();
   }
 
   async findAppointmentsForAgentOnDay(agentId: string, day: Date): Promise<Booking[]> {
     return this.bookingModel.find({
-      agent: agentId,
+      agent:  new Types.ObjectId(agentId),
       booking_date: {
         $gte: new Date(day.setHours(0, 0, 0)),
         $lt: new Date(day.setHours(23, 59, 59)),

@@ -4,21 +4,18 @@ import { UsersService } from './users.service';
 @Controller('users')
 export class UsersController {
   constructor(private readonly _userservice: UsersService) {}
-  
-  @Get('/:id')
-  async getbyid(@Param('id') id: string) {
-    return await this._userservice.getUserbyId(id);
-  }
-
-  
 
   @Get('/agents')
   async getAllAgents() {
     return await this._userservice.getAllAgents();
   }
   
+  @Get('/:id')
+  async getbyid(@Param('id') id: string) {
+    return await this._userservice.getUserbyId(id);
+  }
 
-  @Get('/agent/:id')
+  @Get('/agents/:id')
   async getAgentById(@Param('id') id: string) {
     return await this._userservice.getAgentById(id);
   }

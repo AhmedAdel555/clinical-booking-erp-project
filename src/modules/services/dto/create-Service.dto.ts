@@ -4,17 +4,17 @@ export class CreateServiceDTO{
 
   @IsString()
   @IsNotEmpty()
-  service_name: string;
+  serviceName: string;
 
   @IsString()
   @IsNotEmpty()
-  service_description: string;
+  serviceDescription: string;
 
   @IsNumber()
   @IsNotEmpty()
-  service_fees_amount: number;
+  serviceFeesAmount: number;
 
   @IsString()
   @IsNotEmpty()
-  service_fees_description: string
+  serviceFeesDescription: string
 }

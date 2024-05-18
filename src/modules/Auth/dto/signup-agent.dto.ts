@@ -6,7 +6,7 @@ export class SignUpAgentDTO extends SignUpDTO{
 
   @IsString()
   @IsNotEmpty()
-  NationalId: string;
+  nationalId: string;
 
   @IsMongoId()
   catalogId: string;

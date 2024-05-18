@@ -26,12 +26,9 @@ export class ServicesController {
      return this.servicesService.findServiceById(serviceId);
   }
 
-
   @Get('/organizations/:organizationId')
   async findOrganizationServices(@Param('organizationId') organizationId: string){
      return await this.servicesService.findOrganizationServices(organizationId);
   }
-
-
 
 }

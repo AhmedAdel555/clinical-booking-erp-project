@@ -114,8 +114,8 @@ export class authService {
         expiresIn: '1d'  
       },
     );
-
-    return { message: 'Done', user: userExists, token };
+    
+    return { message: 'Done', user: {_id: userExists['_id'],username: userExists.username,email: userExists.email}, token };
   }
   
 }

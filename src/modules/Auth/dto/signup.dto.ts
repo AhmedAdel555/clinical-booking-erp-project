@@ -30,7 +30,7 @@ export class SignUpDTO {
   @MinLength(3, {
     message: 'your name must be at least 3 chars',
   })
-  @MaxLength(10, {
+  @MaxLength(20, {
     message: 'your name mustnot exceed 10 chars',
   })
   username: string;

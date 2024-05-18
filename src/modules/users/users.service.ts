@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { User } from 'src/DB/Schemas/user.schema';
 import { SignUpDTO } from '../Auth/dto/signup.dto';
 import { SignUpAdminDTO } from '../Auth/dto/signup-admin.dto';
@@ -44,12 +44,12 @@ export class UsersService {
 
   async createAdmin(createUserDTO: SignUpAdminDTO, superAdminId: string) {
 
-    const organization = this.organizationModel.findById(createUserDTO.organizationId).exec();
+    const organization = await this.organizationModel.findById(createUserDTO.organizationId).exec();
 
-    const user = this.userModel.findById(superAdminId).exec();
+    const user = await this.userModel.findById(superAdminId).exec();
 
     const createdUser = new this.userModel({
-      NationalId: createUserDTO.NationalId,
+      national_id: createUserDTO.nationalId,
       email: createUserDTO.email,
       password: createUserDTO.password,
       phone: createUserDTO.phone,
@@ -58,6 +58,7 @@ export class UsersService {
       organization: organization,
       createdByUser: user
     });
+
     return createdUser.save();
   }
 
@@ -67,10 +68,10 @@ export class UsersService {
 
     const admin = await this.userModel.findById(adminId).exec();
 
-    const service = await (await this.serviceModel.findById(createUserDTO.serviceId)).populated('organization').exec();
+    const service = await this.serviceModel.findById(createUserDTO.serviceId).populate('organization').exec();
 
     const createdUser = new this.userModel({
-      NationalId: createUserDTO.NationalId,
+      national_id: createUserDTO.nationalId,
       email: createUserDTO.email,
       password: createUserDTO.password,
       phone: createUserDTO.phone,
@@ -89,7 +90,7 @@ export class UsersService {
   }
 
   async getUserbyId(userId: string) {
-    const user = await this.userModel.findById({ userId }).exec();
+    const user = await this.userModel.findById(userId).exec();
     if (!user) {
       throw new BadRequestException('user is not found');
     }
@@ -97,12 +98,12 @@ export class UsersService {
   }
 
   async getAllAgents() {
-    return await this.userModel.find({ role: 'Agent' }).exec();
+    return this.userModel.find({ role: 'Agent' }).exec();
   }
 
   async getAgentById(agentId: string): Promise<User> {
     const user = await this.userModel
-      .findOne({ _id: agentId, role: 'Agent' })
+      .findById(agentId)
       .populate('service')
       .populate('organization')
       .exec();
@@ -116,7 +117,7 @@ export class UsersService {
 
   async getAgentsByOrganization(organizationId: string) {
     const Agents = await this.userModel
-      .find({ role: 'Agent', organization: organizationId })
+      .find({ role: 'Agent', organization: new Types.ObjectId(organizationId) })
       .exec();
     return Agents;
   }
@@ -124,7 +125,7 @@ export class UsersService {
   async getAgentsByService(serviceId: string) {
 
     const Agents = await this.userModel
-      .find({ role: 'Agent', service: serviceId })
+      .find({ role: 'Agent', service: new Types.ObjectId(serviceId) })
       .exec();
     return Agents;
   }
@@ -132,7 +133,7 @@ export class UsersService {
   async getAgentsByCatalog(catalogId: string) {
 
     const Agents = await this.userModel
-      .find({ role: 'Agent', catalog: catalogId })
+      .find({ role: 'Agent', catalog: new Types.ObjectId(catalogId) })
       .exec();
     return Agents;
   }

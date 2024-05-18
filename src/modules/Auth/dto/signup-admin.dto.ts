@@ -5,7 +5,7 @@ export class SignUpAdminDTO extends SignUpDTO{
 
   @IsString()
   @IsNotEmpty()
-  NationalId: string;
+  nationalId: string;
 
   @IsMongoId()
   organizationId: string

@@ -26,7 +26,7 @@ export class authController {
     return { message: "User Successfully Created"};
   }
 
-  @Roles(['Super Admin', 'Admin'])
+  @Roles(['Super Admin'])
   @UseGuards(AuthGuard, RoleGuard)
   @Post('signup/admin')
   async signUpAdmin(@Body() signUpDTO: SignUpAdminDTO, @Req() req) {

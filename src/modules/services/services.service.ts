@@ -1,9 +1,8 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Service } from 'src/DB/Schemas/service.schema';
 import { CreateServiceDTO } from './dto/create-Service.dto';
-import { UsersService } from '../users/users.service';
 import { User } from 'src/DB/Schemas/user.schema';
 
 @Injectable()
@@ -20,10 +19,10 @@ export class ServicesService {
     const user = await this.userModel.findById(adminId).populate('organization').exec();
 
     const newService = new this.serviceModel({
-         service_name: service.service_name,
-         service_description: service.service_description,
-         service_fees_amount:  service.service_fees_amount,
-         service_fees_description: service.service_fees_description,
+         service_name: service.serviceName,
+         service_description: service.serviceDescription,
+         service_fees_amount:  service.serviceFeesAmount,
+         service_fees_description: service.serviceFeesDescription,
          organization: user.organization
     })
 
@@ -35,10 +34,11 @@ export class ServicesService {
   }
 
   async findServiceById(serviceId: string){
-    return (await this.serviceModel.findById(serviceId)).populated('organization').exec();
+    return await this.serviceModel.findById(serviceId).populate('organization').exec();
   }
 
   async findOrganizationServices(organizationId : string){
-    return this.serviceModel.find({ organization: organizationId }).exec();
+    return this.serviceModel.find({organization: new Types.ObjectId(organizationId)}).exec();
   }
+
 }
